@@ -1,0 +1,24 @@
+describe('Message API endpoints', () => {
+    // Create a sample message for use in tests.
+    beforeEach((done) => {
+        // TODO: add any beforeEach code here
+        const sampleUser = new User({
+            username: 'testuser',
+            password: '123456',
+            _id: SAMPLE_OBJECT_ID
+        })
+        sampleUser.save()
+        .then(() => {
+            const sampleMessage = new Message({
+                title: 'Urgent News',
+                body: 'This is extremely important',
+                author: sampleUser,
+                _id: ANOTHER_SAMPLE_OBJECT_ID
+            })
+            sampleMessage.save()
+            .then(() => {
+                done()
+            })
+        })
+
+    })
