@@ -68,7 +68,7 @@ router.delete('/:messageId', (req, res) => {
     Message.findByIdAndDelete(req.params.messageId).then(() => {
     // TODO: Return a JSON object indicating that the Message has been deleted
         return res.json({
-            'message': 'the message has been successfully deleted',
+            'message': 'The message has been successfully deleted.',
             '_id': req.params.messageId
         })
     })

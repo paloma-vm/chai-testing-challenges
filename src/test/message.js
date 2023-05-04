@@ -68,7 +68,6 @@ describe('Message API endpoints', () => {
     it('should get one specific message', (done) => {
         // TODO: Complete this
         chai.request(app)
-        // .get(`/messages/${SAMPLE_OBJECT_ID}`)
         .get(`/messages/${SAMPLE_OBJECT_ID}`)
         .end((err, res) => {
             if (err) { done(err) }
@@ -82,16 +81,56 @@ describe('Message API endpoints', () => {
 
     it('should post a new message', (done) => {
         // TODO: Complete this
-        done()
+        chai.request(app)
+        .post('/messages')
+        .send({title: 'Some other title', body: 'Here is another message', author: ANOTHER_SAMPLE_OBJECT_ID})
+        .end((err, res) => {
+            if (err) { done(err) }
+            expect(res.body.message).to.be.an('object')
+            // expect(res.body.message).to.have.property('title', 'Some other title')
+            expect(res.body.message).to.have.property('title')
+
+
+            // check that message is actually inserted into database
+            Message.findOne({title: 'Some other title'}).then(message => {
+                expect(message).to.be.an('object')
+                done()
+            })
+        })
     })
 
     it('should update a message', (done) => {
         // TODO: Complete this
-        done()
+        chai.request(app)
+        .put(`/messages/${SAMPLE_OBJECT_ID}`)
+        .send({title: 'Urgent News'})
+        .end((err, res) => {
+            if (err) { done(err) }
+            expect(res.body.message).to.be.an('object')
+            expect(res.body.message).to.have.property('title', 'Urgent News')
+
+            // check that message is actually inserted into database
+            Message.findOne({title: 'Urgent News'}).then(message => {
+                expect(message).to.be.an('object')
+                done()
+            })
+        })
     })
 
     it('should delete a message', (done) => {
         // TODO: Complete this
-        done()
+        chai.request(app)
+        .delete(`/messages/${SAMPLE_OBJECT_ID}`)
+        .end((err, res) => {
+            if (err) { done(err) }
+            expect(res.body.message).to.equal('The message has been successfully deleted.')
+            expect(res.body._id).to.equal(SAMPLE_OBJECT_ID)
+
+            // check that message is actually deleted from database
+            Message.findOne({title: 'Urgent News'}).then(message => {
+                expect(message).to.equal(null)
+                done()
+            })
+        })
     })
 })
