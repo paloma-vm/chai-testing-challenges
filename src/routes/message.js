@@ -45,7 +45,8 @@ router.post('/', (req, res) => {
     })
     .then(() => {
         return res.send(message)
-    }).catch(err => {
+    // }).catch(err => {
+    }).catch((err) => {
         throw err.message
     })
 })
