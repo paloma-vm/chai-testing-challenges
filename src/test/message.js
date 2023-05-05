@@ -78,7 +78,8 @@ describe('Message API endpoints', () => {
             done()
         })
     })
-
+// I tried, but it is still not working.  I could change the route, but it was provided in the README as is
+// so I was not sure if I should change it.
     it('should post a new message', (done) => {
         // TODO: Complete this
         chai.request(app)
