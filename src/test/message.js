@@ -25,33 +25,57 @@ after((done) => {
   done()
 })
 
-const ANOTHER_SAMPLE_OBJECT_ID = 'mmmmmmmmmmmm' // 12 byte string
-const SAMPLE_OBJECT_ID = 'bbbbbbbbbbbb'
+const SAMPLE_MESSAGE_ID = 'mmmmmmmmmmmm' // 12 byte string
+const SAMPLE_USER_ID = 'bbbbbbbbbbbb'
 
 describe('Message API endpoints', () => {
     // Create a sample message for use in tests.
     beforeEach((done) => {
         // TODO: add any beforeEach code here
-        const sampleMessage = new Message({
-            title: 'Urgent News',
-            body: 'This is extremely important',
-            author: ANOTHER_SAMPLE_OBJECT_ID,
-            _id: SAMPLE_OBJECT_ID
+        const sampleUser = new User({
+            username: 'myuser',
+            password: 'mypassword',
+            _id: SAMPLE_USER_ID 
         })
-        sampleMessage.save()
-        .then(() => {
-            done()
+        sampleUser.save((err, savedUser) => {
+            if (err) {
+                return done(err)
+            } 
+            const sampleMessage = new Message({
+                title: 'Urgent News',
+                body: 'This is extremely important',
+                author: savedUser,
+                _id: SAMPLE_MESSAGE_ID
+            })
+            sampleMessage.save((err, savedMessage) => {
+                if (err) {
+                    return done(err)
+                }
+                // expect(savedMessage.body._id).to.equal('mmmmmmmmmmmm')
+                done()
+            })
         })
+
     })
     
     // Delete sample message
     afterEach((done) => {
         // TODO: add any afterEach code here
-        Message.deleteMany({ title: ['Urgent News', 'Some other title'] }) // do these titles even matter?
-        .then(() => {
-            done()
+        Message.deleteOne({ _id: SAMPLE_MESSAGE_ID }, (err) => {
+            if (err) {
+                return done(err)
+            }
+            User.deleteOne({ _id: SAMPLE_USER_ID }, (err) => {
+                if (err) {
+                    return done(err)
+                }
+                done()
+            })
+            
         })
+           
     })
+
 
     it('should load all messages', (done) => {
         // TODO: Complete this
@@ -68,7 +92,7 @@ describe('Message API endpoints', () => {
     it('should get one specific message', (done) => {
         // TODO: Complete this
         chai.request(app)
-        .get(`/messages/${SAMPLE_OBJECT_ID}`)
+        .get(`/messages/${SAMPLE_USER_ID}`)
         .end((err, res) => {
             if (err) { done(err) }
             expect(res).to.have.status(200)
@@ -84,7 +108,7 @@ describe('Message API endpoints', () => {
         // TODO: Complete this
         chai.request(app)
         .post('/messages')
-        .send({title: 'Some other title', body: 'Here is another message', author: ANOTHER_SAMPLE_OBJECT_ID})
+        .send({title: 'Some other title', body: 'Here is another message', author: SAMPLE_MESSAGE_ID})
         .end((err, res) => {
             if (err) { done(err) }
             expect(res.body.message).to.be.an('object')
@@ -103,7 +127,7 @@ describe('Message API endpoints', () => {
     it('should update a message', (done) => {
         // TODO: Complete this
         chai.request(app)
-        .put(`/messages/${SAMPLE_OBJECT_ID}`)
+        .put(`/messages/${SAMPLE_USER_ID}`)
         .send({title: 'Urgent News'})
         .end((err, res) => {
             if (err) { done(err) }
@@ -121,11 +145,11 @@ describe('Message API endpoints', () => {
     it('should delete a message', (done) => {
         // TODO: Complete this
         chai.request(app)
-        .delete(`/messages/${SAMPLE_OBJECT_ID}`)
+        .delete(`/messages/${SAMPLE_USER_ID}`)
         .end((err, res) => {
             if (err) { done(err) }
             expect(res.body.message).to.equal('The message has been successfully deleted.')
-            expect(res.body._id).to.equal(SAMPLE_OBJECT_ID)
+            expect(res.body._id).to.equal(SAMPLE_USER_ID)
 
             // check that message is actually deleted from database
             Message.findOne({title: 'Urgent News'}).then(message => {

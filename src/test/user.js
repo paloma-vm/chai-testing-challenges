@@ -24,7 +24,7 @@ after((done) => {
   done()
 })
 
-const SAMPLE_OBJECT_ID = 'aaaaaaaaaaaa' // 12 byte string
+const SAMPLE_USER_ID = 'bbbbbbbbbbbb' // 12 byte string
 
 describe('User API endpoints', () => {
     // Create a sample user for use in tests.
@@ -32,7 +32,7 @@ describe('User API endpoints', () => {
         const sampleUser = new User({
             username: 'myuser',
             password: 'mypassword',
-            _id: SAMPLE_OBJECT_ID
+            _id: SAMPLE_USER_ID
         })
         sampleUser.save()
         .then(() => {
@@ -61,7 +61,7 @@ describe('User API endpoints', () => {
 
     it('should get one user', (done) => {
         chai.request(app)
-        .get(`/users/${SAMPLE_OBJECT_ID}`)
+        .get(`/users/${SAMPLE_USER_ID}`)
         .end((err, res) => {
             if (err) { done(err) }
             expect(res).to.have.status(200)
@@ -91,7 +91,7 @@ describe('User API endpoints', () => {
 
     it('should update a user', (done) => {
         chai.request(app)
-        .put(`/users/${SAMPLE_OBJECT_ID}`)
+        .put(`/users/${SAMPLE_USER_ID}`)
         .send({username: 'anotheruser'})
         .end((err, res) => {
             if (err) { done(err) }
@@ -108,11 +108,11 @@ describe('User API endpoints', () => {
 
     it('should delete a user', (done) => {
         chai.request(app)
-        .delete(`/users/${SAMPLE_OBJECT_ID}`)
+        .delete(`/users/${SAMPLE_USER_ID}`)
         .end((err, res) => {
             if (err) { done(err) }
             expect(res.body.message).to.equal('Successfully deleted.')
-            expect(res.body._id).to.equal(SAMPLE_OBJECT_ID)
+            expect(res.body._id).to.equal(SAMPLE_USER_ID)
 
             // check that user is actually deleted from database
             User.findOne({username: 'myuser'}).then(user => {
