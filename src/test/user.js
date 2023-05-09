@@ -24,7 +24,7 @@ after((done) => {
   done()
 })
 
-const SAMPLE_USER_ID = 'bbbbbbbbbbbb' // 12 byte string
+const SAMPLE_USER_ID = 'uuuuuuuuuuuu' // 12 byte string
 
 describe('User API endpoints', () => {
     // Create a sample user for use in tests.
@@ -34,16 +34,23 @@ describe('User API endpoints', () => {
             password: 'mypassword',
             _id: SAMPLE_USER_ID
         })
-        sampleUser.save()
-        .then(() => {
+        sampleUser.save((err, savedUser) => {
+            if (err) {
+                return done(err)
+            }
+            expect(savedUser.body._id).to.equal('uuuuuuuuuuuu')
+            console.log(`saved user:${savedUser}`)
             done()
         })
+
     })
 
     // Delete sample user.
     afterEach((done) => {
-        User.deleteMany({ username: ['myuser', 'anotheruser'] })
-        .then(() => {
+        User.deleteMany({ username: ['myuser', 'anotheruser'] }, (err) => {
+            if (err) {
+                return done(err)
+            }
             done()
         })
     })

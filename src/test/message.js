@@ -26,7 +26,7 @@ after((done) => {
 })
 
 const SAMPLE_MESSAGE_ID = 'mmmmmmmmmmmm' // 12 byte string
-const SAMPLE_USER_ID = 'bbbbbbbbbbbb'
+const SAMPLE_USER_ID = 'uuuuuuuuuuuu'
 
 describe('Message API endpoints', () => {
     // Create a sample message for use in tests.
@@ -37,23 +37,27 @@ describe('Message API endpoints', () => {
             password: 'mypassword',
             _id: SAMPLE_USER_ID 
         })
+        // sampleUser.save((err, savedUser) => { // is sampleUser the same as savedUser?
         sampleUser.save((err, savedUser) => {
+
             if (err) {
                 return done(err)
             } 
             const sampleMessage = new Message({
                 title: 'Urgent News',
                 body: 'This is extremely important',
-                author: savedUser,
+                author: savedUser, //  ? Schema says ObjectID, savedUser is object
+                // author: SAMPLE_USER_ID,
                 _id: SAMPLE_MESSAGE_ID
             })
             sampleMessage.save((err, savedMessage) => {
                 if (err) {
                     return done(err)
                 }
-                // expect(savedMessage.body._id).to.equal('mmmmmmmmmmmm')
+                // expect(savedMessage.body._id).to.equal('mmmmmmmmmmmm') 
                 done()
             })
+            
         })
 
     })
@@ -92,7 +96,7 @@ describe('Message API endpoints', () => {
     it('should get one specific message', (done) => {
         // TODO: Complete this
         chai.request(app)
-        .get(`/messages/${SAMPLE_USER_ID}`)
+        .get(`/messages/${SAMPLE_MESSAGE_ID}`)
         .end((err, res) => {
             if (err) { done(err) }
             expect(res).to.have.status(200)
@@ -108,7 +112,7 @@ describe('Message API endpoints', () => {
         // TODO: Complete this
         chai.request(app)
         .post('/messages')
-        .send({title: 'Some other title', body: 'Here is another message', author: SAMPLE_MESSAGE_ID})
+        .send({title: 'Some other title', body: 'Here is another message', author: SAMPLE_USER_ID})
         .end((err, res) => {
             if (err) { done(err) }
             expect(res.body.message).to.be.an('object')
@@ -127,7 +131,7 @@ describe('Message API endpoints', () => {
     it('should update a message', (done) => {
         // TODO: Complete this
         chai.request(app)
-        .put(`/messages/${SAMPLE_USER_ID}`)
+        .put(`/messages/${SAMPLE_MESSAGE_ID}`)
         .send({title: 'Urgent News'})
         .end((err, res) => {
             if (err) { done(err) }
@@ -145,11 +149,11 @@ describe('Message API endpoints', () => {
     it('should delete a message', (done) => {
         // TODO: Complete this
         chai.request(app)
-        .delete(`/messages/${SAMPLE_USER_ID}`)
+        .delete(`/messages/${SAMPLE_MESSAGE_ID}`)
         .end((err, res) => {
             if (err) { done(err) }
             expect(res.body.message).to.equal('The message has been successfully deleted.')
-            expect(res.body._id).to.equal(SAMPLE_USER_ID)
+            expect(res.body._id).to.equal(SAMPLE_MESSAGE_ID)
 
             // check that message is actually deleted from database
             Message.findOne({title: 'Urgent News'}).then(message => {
