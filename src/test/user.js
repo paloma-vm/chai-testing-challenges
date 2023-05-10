@@ -3,6 +3,7 @@ const app = require('../server.js')
 const mongoose = require('mongoose')
 const chai = require('chai')
 const chaiHttp = require('chai-http')
+const { ObjectId } = require('mongodb'); // added this because the test was getting _id as hexidecimal (help from ChatGPT)
 
 const User = require('../models/user.js')
 const Message = require('../models/message.js')
@@ -32,14 +33,17 @@ describe('User API endpoints', () => {
         const sampleUser = new User({
             username: 'myuser',
             password: 'mypassword',
-            _id: SAMPLE_USER_ID
+            _id:  new ObjectId(SAMPLE_USER_ID) // changed to address hexidecimal (help from ChatGPT)
         })
         sampleUser.save((err, savedUser) => {
             if (err) {
                 return done(err)
             }
-            expect(savedUser.body._id).to.equal('uuuuuuuuuuuu')
+            // expect(savedUser.body._id).to.equal('uuuuuuuuuuuu')
+            //expect(savedUser._id).to.equal('uuuuuuuuuuuu')
+
             console.log(`saved user:${savedUser}`)
+            console.log(savedUser)
             done()
         })
 

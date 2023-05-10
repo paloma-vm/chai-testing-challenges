@@ -4,6 +4,8 @@ const mongoose = require('mongoose')
 const chai = require('chai')
 const chaiHttp = require('chai-http')
 const assert = chai.assert
+const { ObjectId } = require('mongodb'); // added this because the test was getting _id as hexidecimal (help from ChatGPT)
+
 
 const User = require('../models/user.js')
 const Message = require('../models/message.js')
@@ -35,7 +37,7 @@ describe('Message API endpoints', () => {
         const sampleUser = new User({
             username: 'myuser',
             password: 'mypassword',
-            _id: SAMPLE_USER_ID 
+            _id: new ObjectId(SAMPLE_USER_ID)  // changed to address hexidecimal (help from ChatGPT)
         })
         // sampleUser.save((err, savedUser) => { // is sampleUser the same as savedUser?
         sampleUser.save((err, savedUser) => {
@@ -115,9 +117,9 @@ describe('Message API endpoints', () => {
         .send({title: 'Some other title', body: 'Here is another message', author: SAMPLE_USER_ID})
         .end((err, res) => {
             if (err) { done(err) }
-            expect(res.body.message).to.be.an('object')
+            expect(res.body.body).to.equal('Here is another message')
             // expect(res.body.message).to.have.property('title', 'Some other title')
-            expect(res.body.message).to.have.property('title')
+            expect(res.body).to.have.property('title', 'Some other title')
 
 
             // check that message is actually inserted into database
